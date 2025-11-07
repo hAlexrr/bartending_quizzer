@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(dir /s /b \"C:\\Users\\hAlexrr''''s PC\\Documents\\repos\\bartending_quizzer\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
