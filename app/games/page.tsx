@@ -9,7 +9,7 @@ import IngredientMatchGame from '@/components/games/IngredientMatchGame';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
-import { Gamepad2, Target, Wine, Trophy, Zap, Construction, Clock, Droplet } from 'lucide-react';
+import { Gamepad2, Target, Wine, Trophy, Zap, Construction, Clock, Droplet, Flame, Users } from 'lucide-react';
 
 type GameType = 'measurement' | 'ingredient' | null;
 
@@ -18,6 +18,26 @@ export default function GamesPage() {
   const router = useRouter();
 
   const newGames = [
+    {
+      title: 'Bartender Rush Mode',
+      description: 'Simulate a busy bar shift! Manage multiple orders, build combos, and don\'t let orders expire',
+      icon: Flame,
+      color: 'from-red-500 to-orange-600',
+      difficulty: 'Hard',
+      estimatedTime: '5-10 min',
+      route: '/games/bartender-rush',
+      badge: 'NEW',
+    },
+    {
+      title: 'Pouring Practice',
+      description: 'Master your pouring technique with visual feedback and timing challenges',
+      icon: Droplet,
+      color: 'from-blue-500 to-cyan-600',
+      difficulty: 'All Levels',
+      estimatedTime: '5+ min',
+      route: '/games/pouring-practice',
+      badge: 'NEW',
+    },
     {
       title: 'Build-a-Drink',
       description: 'Recreate cocktails by selecting the right ingredients with correct measurements',
@@ -110,7 +130,7 @@ export default function GamesPage() {
         {/* New Games Section */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">New Games</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {newGames.map((game, index) => {
               const Icon = game.icon;
               return (
