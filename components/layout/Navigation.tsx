@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Home, BookOpen, Brain, Gamepad2, PlusCircle, TrendingUp, ChefHat } from 'lucide-react';
+import { Home, BookOpen, Brain, Gamepad2, PlusCircle, TrendingUp, ChefHat, Wrench } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/flashcards', label: 'Flashcards', icon: BookOpen },
   { href: '/quizzes', label: 'Quizzes', icon: Brain },
   { href: '/games', label: 'Games', icon: Gamepad2 },
+  { href: '/tools', label: 'Tools', icon: Wrench },
   { href: '/create', label: 'Create', icon: PlusCircle },
   { href: '/progress', label: 'Progress', icon: TrendingUp },
 ];
