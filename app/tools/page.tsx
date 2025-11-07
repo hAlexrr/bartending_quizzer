@@ -207,7 +207,7 @@ export default function ToolsPage() {
                   <Input
                     type="number"
                     value={scaleFactor}
-                    onChange={(e) => setScaleFactor(parseFloat(e.target.value) || 1)}
+                    onChange={(value) => setScaleFactor(parseFloat(value) || 1)}
                     min="0.1"
                     step="0.1"
                     className="w-32"
@@ -312,8 +312,8 @@ export default function ToolsPage() {
                       type="number"
                       step="0.01"
                       value={costs[ingredient] || ''}
-                      onChange={(e) =>
-                        setCosts({ ...costs, [ingredient]: parseFloat(e.target.value) || 0 })
+                      onChange={(value) =>
+                        setCosts({ ...costs, [ingredient]: parseFloat(value) || 0 })
                       }
                       placeholder="0.00"
                       className="w-24"
@@ -607,7 +607,7 @@ export default function ToolsPage() {
             <Input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(value) => setSearchTerm(value)}
               placeholder="Search for an ingredient..."
               icon={<Search className="w-4 h-4" />}
             />

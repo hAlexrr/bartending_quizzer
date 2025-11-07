@@ -141,7 +141,7 @@ export default function RecipesPage() {
               type="text"
               placeholder="Search recipes, ingredients, categories..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(value) => setSearchQuery(value)}
               icon={<Search className="w-4 h-4" />}
             />
           </div>

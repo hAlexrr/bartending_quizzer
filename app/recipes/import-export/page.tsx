@@ -266,7 +266,7 @@ export default function ImportExportPage() {
                     </label>
                     <Input
                       value={collectionName}
-                      onChange={(e) => setCollectionName(e.target.value)}
+                      onChange={(value) => setCollectionName(value)}
                       placeholder="e.g., Summer Cocktails 2024"
                     />
                   </div>
