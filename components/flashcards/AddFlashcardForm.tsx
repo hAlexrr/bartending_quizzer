@@ -55,6 +55,7 @@ export default function AddFlashcardForm({ onSuccess }: AddFlashcardFormProps) {
       difficulty,
       reviewCount: 0,
       correctCount: 0,
+      confidenceLevel: 1, // New flashcards start with lowest confidence
     };
 
     saveFlashcard(newFlashcard);

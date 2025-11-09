@@ -92,13 +92,14 @@ export function createGoal(
   type: Goal['type'],
   metric: Goal['metric'],
   target: number,
-  durationDays: number = 7
+  durationDays: number = 7,
+  title?: string
 ): Goal {
   const startDate = new Date();
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + durationDays);
 
-  return {
+  const goal: Goal = {
     id: generateId(),
     type,
     target,
@@ -108,6 +109,23 @@ export function createGoal(
     endDate,
     completed: false,
   };
+
+  if (title) {
+    goal.title = title;
+  }
+
+  return goal;
+}
+
+export function completeGoal(id: string): void {
+  const goals = getGoals();
+  const goal = goals.find(g => g.id === id);
+
+  if (goal) {
+    goal.completed = true;
+    goal.completedAt = new Date();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
+  }
 }
 
 export function getTodaysGoals(): Goal[] {

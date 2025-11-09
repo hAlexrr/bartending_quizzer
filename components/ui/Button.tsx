@@ -6,23 +6,33 @@ import { ReactNode } from 'react';
 interface ButtonProps {
   children: ReactNode;
   onClick?: () => void;
+  onMouseDown?: () => void;
+  onMouseUp?: () => void;
+  onTouchStart?: () => void;
+  onTouchEnd?: () => void;
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
   fullWidth?: boolean;
+  title?: string;
 }
 
 export default function Button({
   children,
   onClick,
+  onMouseDown,
+  onMouseUp,
+  onTouchStart,
+  onTouchEnd,
   variant = 'primary',
   size = 'md',
   disabled = false,
   type = 'button',
   className = '',
   fullWidth = false,
+  title,
 }: ButtonProps) {
   const baseStyles = 'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
 
@@ -47,7 +57,12 @@ export default function Button({
     <motion.button
       type={type}
       onClick={onClick}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
       disabled={disabled}
+      title={title}
       className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${
         disabled ? disabledStyles : ''
       } ${widthStyles} ${className}`}

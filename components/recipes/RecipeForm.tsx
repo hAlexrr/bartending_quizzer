@@ -262,8 +262,7 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
           <div className="col-span-2">
             <Input
               type="number"
-              step="0.25"
-              value={currentIngredient.amount || ''}
+              value={currentIngredient.amount?.toString() || ''}
               onChange={(value) => setCurrentIngredient({ ...currentIngredient, amount: parseFloat(value) || 0 })}
               placeholder="2"
             />

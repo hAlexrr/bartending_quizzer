@@ -63,7 +63,7 @@ export default function BartenderRushMode() {
             const elapsed = Date.now() - order.orderTime.getTime();
             const remaining = order.timeLimit - Math.floor(elapsed / 1000);
 
-            if (remaining <= 0 && order.status !== 'failed') {
+            if (remaining <= 0) {
               // Order expired
               setLives(l => l - 1);
               setCombo(0);

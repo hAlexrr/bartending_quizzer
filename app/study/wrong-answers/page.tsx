@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { WrongAnswer } from '@/types';
+import { WrongAnswer, DrinkRecipe, Flashcard, Question } from '@/types';
 import {
   getWrongAnswers,
   getTopWrongAnswers,
@@ -222,9 +222,9 @@ export default function WrongAnswersPage() {
 
                         <h3 className="text-lg font-bold text-gray-900 mb-2">
                           {details ? (
-                            wrongAnswer.type === 'recipe' ? details.name :
-                            wrongAnswer.type === 'flashcard' ? details.front :
-                            wrongAnswer.type === 'quiz' ? details.question :
+                            wrongAnswer.type === 'recipe' ? (details as DrinkRecipe).name :
+                            wrongAnswer.type === 'flashcard' ? (details as Flashcard).front :
+                            wrongAnswer.type === 'quiz' ? (details as Question & { quizTitle: string }).question :
                             'Unknown Item'
                           ) : (
                             <span className="text-gray-500">Item not found</span>
@@ -233,7 +233,7 @@ export default function WrongAnswersPage() {
 
                         {details && wrongAnswer.type === 'flashcard' && (
                           <p className="text-sm text-gray-600 mb-2">
-                            Answer: {details.back}
+                            Answer: {(details as Flashcard).back}
                           </p>
                         )}
 

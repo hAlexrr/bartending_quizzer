@@ -200,7 +200,7 @@ export default function ImportExportPage() {
                       id="import-json"
                     />
                     <label htmlFor="import-json">
-                      <Button variant="secondary" as="span">
+                      <Button variant="secondary">
                         <Upload className="w-4 h-4 mr-2" />
                         Import Data
                       </Button>
@@ -236,7 +236,7 @@ export default function ImportExportPage() {
                       id="import-csv"
                     />
                     <label htmlFor="import-csv">
-                      <Button variant="secondary" as="span">
+                      <Button variant="secondary">
                         <Upload className="w-4 h-4 mr-2" />
                         Import CSV
                       </Button>
@@ -318,7 +318,7 @@ export default function ImportExportPage() {
                         id="import-collection"
                       />
                       <label htmlFor="import-collection">
-                        <Button variant="secondary" as="span">
+                        <Button variant="secondary">
                           <Upload className="w-4 h-4 mr-2" />
                           Import Collection
                         </Button>

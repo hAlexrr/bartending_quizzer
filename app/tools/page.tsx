@@ -206,10 +206,8 @@ export default function ToolsPage() {
                   <label className="text-sm font-medium text-gray-700">Custom:</label>
                   <Input
                     type="number"
-                    value={scaleFactor}
+                    value={scaleFactor.toString()}
                     onChange={(value) => setScaleFactor(parseFloat(value) || 1)}
-                    min="0.1"
-                    step="0.1"
                     className="w-32"
                   />
                   <span className="text-sm text-gray-600">servings</span>
@@ -310,8 +308,7 @@ export default function ToolsPage() {
                     <span className="text-sm text-gray-600">$</span>
                     <Input
                       type="number"
-                      step="0.01"
-                      value={costs[ingredient] || ''}
+                      value={costs[ingredient]?.toString() || ''}
                       onChange={(value) =>
                         setCosts({ ...costs, [ingredient]: parseFloat(value) || 0 })
                       }
@@ -609,7 +606,6 @@ export default function ToolsPage() {
               value={searchTerm}
               onChange={(value) => setSearchTerm(value)}
               placeholder="Search for an ingredient..."
-              icon={<Search className="w-4 h-4" />}
             />
           </Card>
 

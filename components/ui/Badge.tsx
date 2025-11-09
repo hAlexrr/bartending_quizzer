@@ -7,6 +7,7 @@ interface BadgeProps {
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  onClick?: () => void;
 }
 
 export default function Badge({
@@ -14,6 +15,7 @@ export default function Badge({
   variant = 'default',
   size = 'md',
   className = '',
+  onClick,
 }: BadgeProps) {
   const variantStyles = {
     default: 'bg-gray-100 text-gray-800',
@@ -32,6 +34,10 @@ export default function Badge({
   return (
     <span
       className={`inline-flex items-center font-semibold rounded-full ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => e.key === 'Enter' && onClick() : undefined}
     >
       {children}
     </span>

@@ -12,6 +12,8 @@ interface InputProps {
   required?: boolean;
   rows?: number;
   className?: string;
+  autoFocus?: boolean;
+  disabled?: boolean;
 }
 
 export default function Input({
@@ -24,6 +26,8 @@ export default function Input({
   required = false,
   rows = 4,
   className = '',
+  autoFocus = false,
+  disabled = false,
 }: InputProps) {
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     onChange(e.target.value);
@@ -49,6 +53,8 @@ export default function Input({
           placeholder={placeholder}
           required={required}
           rows={rows}
+          autoFocus={autoFocus}
+          disabled={disabled}
           className={`${baseStyles} ${error ? errorStyles : normalStyles} resize-none`}
         />
       ) : (
@@ -58,6 +64,8 @@ export default function Input({
           onChange={handleChange}
           placeholder={placeholder}
           required={required}
+          autoFocus={autoFocus}
+          disabled={disabled}
           className={`${baseStyles} ${error ? errorStyles : normalStyles}`}
         />
       )}

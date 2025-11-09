@@ -191,9 +191,12 @@ export interface WrongAnswer {
 }
 
 // Goal types
+export type GoalType = 'daily' | 'weekly' | 'monthly' | 'custom';
+
 export interface Goal {
   id: string;
-  type: 'daily' | 'weekly' | 'monthly' | 'custom';
+  type: GoalType;
+  title?: string;
   target: number;
   current: number;
   metric: 'flashcards' | 'quizzes' | 'recipes' | 'games' | 'xp' | 'streak';
