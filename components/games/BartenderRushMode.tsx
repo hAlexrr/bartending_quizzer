@@ -20,15 +20,21 @@ export default function BartenderRushMode() {
   const [totalOrdersCompleted, setTotalOrdersCompleted] = useState(0);
   const [gameTime, setGameTime] = useState(0);
   const ordersRef = useRef<BartenderRushOrder[]>([]);
+  const recipesRef = useRef<DrinkRecipe[]>([]);
 
-  // Update ref when orders change
+  // Update refs when state changes
   useEffect(() => {
     ordersRef.current = orders;
   }, [orders]);
 
   useEffect(() => {
+    recipesRef.current = recipes;
+  }, [recipes]);
+
+  useEffect(() => {
     const loadedRecipes = getRecipes().filter(r => r.ingredients && r.ingredients.length > 0);
     setRecipes(loadedRecipes);
+    recipesRef.current = loadedRecipes;
     console.log('Loaded recipes:', loadedRecipes.length);
   }, []);
 
@@ -76,12 +82,23 @@ export default function BartenderRushMode() {
   const getOrderTimeLimit = () => Math.max(30 - (level * 2), 15);
 
   const addNewOrder = useCallback(() => {
-    if (recipes.length === 0) {
-      console.log('No recipes available');
-      return;
+    const currentRecipes = recipesRef.current;
+    console.log('addNewOrder called, recipes available:', currentRecipes.length);
+
+    if (currentRecipes.length === 0) {
+      console.log('No recipes available, trying to reload...');
+      const loadedRecipes = getRecipes().filter(r => r.ingredients && r.ingredients.length > 0);
+      recipesRef.current = loadedRecipes;
+      setRecipes(loadedRecipes);
+
+      if (loadedRecipes.length === 0) {
+        console.error('Still no recipes after reload!');
+        return;
+      }
     }
 
-    const recipe = recipes[Math.floor(Math.random() * recipes.length)];
+    const recipesToUse = recipesRef.current;
+    const recipe = recipesToUse[Math.floor(Math.random() * recipesToUse.length)];
     const newOrder: BartenderRushOrder = {
       id: `order-${Date.now()}-${Math.random()}`,
       recipeId: recipe.id,
@@ -91,9 +108,9 @@ export default function BartenderRushMode() {
       timeLimit: getOrderTimeLimit(),
     };
 
-    console.log('Adding new order:', newOrder.id);
+    console.log('Adding new order:', newOrder.id, 'for recipe:', recipe.name);
     setOrders(prev => [...prev, newOrder]);
-  }, [recipes, level]);
+  }, [level]);
 
   // Periodic order generation
   useEffect(() => {
@@ -114,7 +131,18 @@ export default function BartenderRushMode() {
   }, [gameState, level, addNewOrder]);
 
   const startGame = () => {
-    console.log('Starting game with', recipes.length, 'recipes');
+    // Force reload recipes to ensure they're available
+    const loadedRecipes = getRecipes().filter(r => r.ingredients && r.ingredients.length > 0);
+    setRecipes(loadedRecipes);
+    recipesRef.current = loadedRecipes;
+
+    console.log('Starting game with', loadedRecipes.length, 'recipes');
+
+    if (loadedRecipes.length === 0) {
+      alert('No recipes available! Please add some recipes first.');
+      return;
+    }
+
     setGameState('playing');
     setLevel(1);
     setScore(0);
@@ -124,12 +152,14 @@ export default function BartenderRushMode() {
     setTotalOrdersCompleted(0);
     setGameTime(0);
 
-    // Add initial orders after a short delay to ensure state is updated
+    // Add initial orders immediately
+    console.log('Adding initial orders immediately');
     setTimeout(() => {
-      console.log('Adding initial orders');
       addNewOrder();
-      setTimeout(() => addNewOrder(), 1000);
     }, 100);
+    setTimeout(() => {
+      addNewOrder();
+    }, 1500);
   };
 
   const selectOrder = (order: BartenderRushOrder) => {
@@ -186,7 +216,8 @@ export default function BartenderRushMode() {
   };
 
   const getRecipeForOrder = (order: BartenderRushOrder): DrinkRecipe | undefined => {
-    return recipes.find(r => r.id === order.recipeId);
+    // Use ref to get current recipes
+    return recipesRef.current.find(r => r.id === order.recipeId);
   };
 
   const getRemainingTime = (order: BartenderRushOrder): number => {
