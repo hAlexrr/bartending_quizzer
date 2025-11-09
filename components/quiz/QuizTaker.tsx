@@ -55,7 +55,11 @@ export default function QuizTaker({ quiz, onComplete }: QuizTakerProps) {
   const handleSubmitAnswer = () => {
     if (!selectedAnswer) return;
 
-    const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+    // For fill-in-blank questions, do case-insensitive comparison and trim whitespace
+    const isCorrect = currentQuestion.type === 'fill-in-blank'
+      ? selectedAnswer.trim().toLowerCase() === String(currentQuestion.correctAnswer).trim().toLowerCase()
+      : selectedAnswer === currentQuestion.correctAnswer;
+
     const userAnswer: UserAnswer = {
       questionId: currentQuestion.id,
       userAnswer: selectedAnswer,
@@ -225,7 +229,7 @@ export default function QuizTaker({ quiz, onComplete }: QuizTakerProps) {
                       autoFocus
                     />
                     <p className="text-sm text-gray-500 italic">
-                      💡 Tip: Check your spelling - answers must match exactly
+                      💡 Tip: Answers are case-insensitive, but check your spelling!
                     </p>
                   </div>
                 )}

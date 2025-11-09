@@ -142,14 +142,37 @@ export const generateQuizFromRecipes = (recipes: DrinkRecipe[], title?: string):
     // Question 3: True/False - Ingredient check
     const randomIngredient = recipe.ingredients[Math.floor(Math.random() * recipe.ingredients.length)];
     const hasIngredient = Math.random() > 0.5;
-    questions.push({
-      id: generateId(),
-      type: 'true-false',
-      question: `A ${recipe.name} contains ${randomIngredient.name}. True or False?`,
-      correctAnswer: 'true',
-      explanation: `Yes, a ${recipe.name} includes ${randomIngredient.amount}${randomIngredient.unit} of ${randomIngredient.name}.`,
-      points: 5,
-    });
+
+    if (hasIngredient) {
+      // Question about an ingredient that IS in the recipe
+      questions.push({
+        id: generateId(),
+        type: 'true-false',
+        question: `A ${recipe.name} contains ${randomIngredient.name}. True or False?`,
+        options: ['True', 'False'],
+        correctAnswer: 'True',
+        explanation: `Yes, a ${recipe.name} includes ${randomIngredient.amount}${randomIngredient.unit} of ${randomIngredient.name}.`,
+        points: 5,
+      });
+    } else {
+      // Question about an ingredient that is NOT in the recipe
+      const allIngredients = ['vodka', 'gin', 'rum', 'tequila', 'whiskey', 'lime juice', 'lemon juice', 'orange juice', 'cranberry juice', 'simple syrup', 'triple sec', 'vermouth', 'bitters', 'soda water', 'tonic water'];
+      const recipeIngredientNames = recipe.ingredients.map(i => i.name.toLowerCase());
+      const fakeIngredients = allIngredients.filter(ing => !recipeIngredientNames.includes(ing));
+      const fakeIngredient = fakeIngredients.length > 0
+        ? fakeIngredients[Math.floor(Math.random() * fakeIngredients.length)]
+        : 'pineapple juice';
+
+      questions.push({
+        id: generateId(),
+        type: 'true-false',
+        question: `A ${recipe.name} contains ${fakeIngredient}. True or False?`,
+        options: ['True', 'False'],
+        correctAnswer: 'False',
+        explanation: `No, a ${recipe.name} does not contain ${fakeIngredient}.`,
+        points: 5,
+      });
+    }
   });
 
   return {

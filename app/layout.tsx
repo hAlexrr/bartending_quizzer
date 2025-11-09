@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Navigation from '@/components/layout/Navigation'
 
 export const metadata: Metadata = {
   title: 'Bartending Academy - Master the Art of Mixology',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Navigation />
+        <main>{children}</main>
+      </body>
     </html>
   )
 }
