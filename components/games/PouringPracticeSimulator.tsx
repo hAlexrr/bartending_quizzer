@@ -12,7 +12,7 @@ type PracticeMode = 'free-pour' | 'count-pour' | 'jigger' | 'challenge';
 export default function PouringPracticeSimulator() {
   const [mode, setMode] = useState<PracticeMode | null>(null);
   const [targetAmount, setTargetAmount] = useState(1.5); // oz
-  const [isPour ing, setIsPouring] = useState(false);
+  const [isPouring, setIsPouring] = useState(false);
   const [currentAmount, setCurrentAmount] = useState(0);
   const [pourStartTime, setPourStartTime] = useState<number | null>(null);
   const [attempts, setAttempts] = useState<PourAttempt[]>([]);
