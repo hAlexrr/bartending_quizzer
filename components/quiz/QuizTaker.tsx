@@ -6,6 +6,7 @@ import { Quiz, Question, QuizResult, UserAnswer } from '@/types';
 import Button from '@/components/ui/Button';
 import ProgressBar from '@/components/ui/ProgressBar';
 import Card from '@/components/ui/Card';
+import Input from '@/components/ui/Input';
 import { Clock, CheckCircle, XCircle } from 'lucide-react';
 import { saveQuizResult, generateId } from '@/lib/storage';
 
@@ -182,7 +183,8 @@ export default function QuizTaker({ quiz, onComplete }: QuizTakerProps) {
               </div>
 
               <div className="space-y-3">
-                {currentQuestion.options?.map((option, index) => (
+                {/* Multiple Choice / True-False Questions */}
+                {(currentQuestion.type === 'multiple-choice' || currentQuestion.type === 'true-false') && currentQuestion.options?.map((option, index) => (
                   <motion.button
                     key={index}
                     onClick={() => handleAnswerSelect(option)}
@@ -210,6 +212,32 @@ export default function QuizTaker({ quiz, onComplete }: QuizTakerProps) {
                     </div>
                   </motion.button>
                 ))}
+
+                {/* Fill in the Blank Questions */}
+                {currentQuestion.type === 'fill-in-blank' && (
+                  <div className="space-y-4">
+                    <Input
+                      type="text"
+                      value={selectedAnswer}
+                      onChange={(value) => setSelectedAnswer(value)}
+                      placeholder="Type your answer here..."
+                      className="text-lg"
+                      autoFocus
+                    />
+                    <p className="text-sm text-gray-500 italic">
+                      💡 Tip: Check your spelling - answers must match exactly
+                    </p>
+                  </div>
+                )}
+
+                {/* Matching Questions - Future implementation */}
+                {currentQuestion.type === 'matching' && (
+                  <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                    <p className="text-yellow-800 font-medium">
+                      Matching questions are not yet supported. This question will be skipped.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <Button
