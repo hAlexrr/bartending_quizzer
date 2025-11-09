@@ -22,6 +22,13 @@ export default function BartenderRushMode() {
   const ordersRef = useRef<BartenderRushOrder[]>([]);
   const recipesRef = useRef<DrinkRecipe[]>([]);
 
+  // Pouring state
+  const [currentIngredientIndex, setCurrentIngredientIndex] = useState(0);
+  const [isPouring, setIsPouring] = useState(false);
+  const [pouredAmount, setPouredAmount] = useState(0);
+  const [ingredientPours, setIngredientPours] = useState<number[]>([]);
+  const pouringIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   // Update refs when state changes
   useEffect(() => {
     ordersRef.current = orders;
@@ -165,22 +172,75 @@ export default function BartenderRushMode() {
   const selectOrder = (order: BartenderRushOrder) => {
     if (order.status === 'pending') {
       setSelectedOrder(order);
+      setCurrentIngredientIndex(0);
+      setPouredAmount(0);
+      setIngredientPours([]);
+      setIsPouring(false);
       setOrders(prev => prev.map(o =>
         o.id === order.id ? { ...o, status: 'in-progress' as const } : o
       ));
     }
   };
 
-  const completeOrder = (correct: boolean) => {
+  const startPouring = () => {
+    setIsPouring(true);
+    setPouredAmount(0);
+
+    pouringIntervalRef.current = setInterval(() => {
+      setPouredAmount(prev => Math.min(prev + 0.05, 10));
+    }, 100);
+  };
+
+  const stopPouring = () => {
+    if (pouringIntervalRef.current) {
+      clearInterval(pouringIntervalRef.current);
+      pouringIntervalRef.current = null;
+    }
+    setIsPouring(false);
+
+    // Record the pour
+    setIngredientPours(prev => [...prev, pouredAmount]);
+
+    const recipe = getRecipeForOrder(selectedOrder!);
+    if (!recipe) return;
+
+    // Move to next ingredient or complete order
+    if (currentIngredientIndex < recipe.ingredients.length - 1) {
+      setCurrentIngredientIndex(prev => prev + 1);
+      setPouredAmount(0);
+    } else {
+      // All ingredients poured, calculate score
+      completeOrderWithPours();
+    }
+  };
+
+  const completeOrderWithPours = () => {
     if (!selectedOrder) return;
+
+    const recipe = getRecipeForOrder(selectedOrder);
+    if (!recipe) return;
+
+    // Calculate accuracy for each ingredient
+    let totalAccuracy = 0;
+    recipe.ingredients.forEach((ingredient, index) => {
+      const targetAmount = ingredient.amount;
+      const pouredAmountForIngredient = ingredientPours[index] || 0;
+      const difference = Math.abs(pouredAmountForIngredient - targetAmount);
+      const accuracy = Math.max(0, 100 - (difference / targetAmount) * 100);
+      totalAccuracy += accuracy;
+    });
+
+    const averageAccuracy = totalAccuracy / recipe.ingredients.length;
+    const isCorrect = averageAccuracy >= 75; // Need 75% accuracy to pass
 
     const elapsed = Date.now() - selectedOrder.orderTime.getTime();
     const timeBonus = Math.max(0, Math.floor((selectedOrder.timeLimit * 1000 - elapsed) / 1000) * 10);
+    const accuracyBonus = Math.floor(averageAccuracy * 2); // Bonus points for accuracy
 
-    if (correct) {
+    if (isCorrect) {
       const basePoints = 100;
       const comboBonus = combo * 25;
-      const points = basePoints + comboBonus + timeBonus;
+      const points = basePoints + comboBonus + timeBonus + accuracyBonus;
 
       setScore(prev => prev + points);
       setCombo(prev => prev + 1);
@@ -212,7 +272,11 @@ export default function BartenderRushMode() {
       }, 1000);
     }
 
+    // Reset pouring state
     setSelectedOrder(null);
+    setCurrentIngredientIndex(0);
+    setPouredAmount(0);
+    setIngredientPours([]);
   };
 
   const getRecipeForOrder = (order: BartenderRushOrder): DrinkRecipe | undefined => {
@@ -442,44 +506,145 @@ export default function BartenderRushMode() {
         )}
       </div>
 
-      {/* Selected Order Details */}
-      {selectedOrder && (
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-        >
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-white">
-            <div className="mb-4">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Now Making: {getRecipeForOrder(selectedOrder)?.name}
-              </h3>
-              <p className="text-gray-600 text-sm">Identify the ingredients correctly</p>
-            </div>
+      {/* Selected Order Details - Pouring Interface */}
+      {selectedOrder && (() => {
+        const recipe = getRecipeForOrder(selectedOrder);
+        if (!recipe) return null;
 
-            <div className="bg-white p-4 rounded-lg mb-4">
-              <h4 className="font-bold text-gray-900 mb-3">Ingredients:</h4>
-              <div className="space-y-2">
-                {getRecipeForOrder(selectedOrder)?.ingredients.map((ing, i) => (
-                  <div key={i} className="text-gray-700">
-                    • {ing.amount}{ing.unit} {ing.name}
-                  </div>
+        const currentIngredient = recipe.ingredients[currentIngredientIndex];
+        const isLastIngredient = currentIngredientIndex === recipe.ingredients.length - 1;
+
+        return (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+          >
+            <Card className="p-6 bg-gradient-to-br from-blue-50 to-white">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Now Making: {recipe.name}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  Pour ingredient {currentIngredientIndex + 1} of {recipe.ingredients.length}
+                </p>
+              </div>
+
+              {/* Ingredient Progress */}
+              <div className="mb-4 flex gap-2">
+                {recipe.ingredients.map((ing, i) => (
+                  <div
+                    key={i}
+                    className={`flex-1 h-2 rounded-full ${
+                      i < currentIngredientIndex
+                        ? 'bg-green-500'
+                        : i === currentIngredientIndex
+                        ? 'bg-blue-500'
+                        : 'bg-gray-300'
+                    }`}
+                  />
                 ))}
               </div>
-            </div>
 
-            <div className="flex gap-3">
-              <Button onClick={() => completeOrder(true)} className="flex-1">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Serve Correctly
-              </Button>
-              <Button onClick={() => completeOrder(false)} variant="danger" className="flex-1">
-                <XCircle className="w-4 h-4 mr-2" />
-                Made Wrong
-              </Button>
-            </div>
-          </Card>
-        </motion.div>
-      )}
+              {/* Current Ingredient */}
+              <div className="bg-white p-6 rounded-lg mb-4">
+                <div className="text-center mb-4">
+                  <h4 className="text-2xl font-bold text-gray-900 mb-1">{currentIngredient.name}</h4>
+                  <p className="text-gray-600">Target: {currentIngredient.amount} {currentIngredient.unit}</p>
+                </div>
+
+                {/* Visual Glass */}
+                <div className="relative w-32 h-64 mx-auto bg-gradient-to-b from-blue-100 to-blue-50 rounded-lg border-4 border-gray-300 overflow-hidden mb-4">
+                  {/* Target Line */}
+                  <div
+                    className="absolute w-full border-t-4 border-dashed border-green-500 z-10"
+                    style={{ bottom: `${Math.min((currentIngredient.amount / 10) * 100, 100)}%` }}
+                  >
+                    <div className="absolute right-2 -top-3 text-xs font-bold text-green-700 bg-white px-2 py-1 rounded">
+                      {currentIngredient.amount}{currentIngredient.unit}
+                    </div>
+                  </div>
+
+                  {/* Liquid */}
+                  <motion.div
+                    className="absolute bottom-0 w-full bg-gradient-to-t from-blue-500 to-blue-400"
+                    animate={{
+                      height: `${Math.min((pouredAmount / 10) * 100, 100)}%`,
+                    }}
+                    transition={{ duration: 0.1 }}
+                  >
+                    {pouredAmount > 0 && (
+                      <div className="absolute top-2 left-0 right-0 text-center text-white font-bold text-sm">
+                        {pouredAmount.toFixed(2)}
+                      </div>
+                    )}
+                  </motion.div>
+
+                  {/* Pour Stream */}
+                  {isPouring && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0.6, 1, 0.6] }}
+                      transition={{ repeat: Infinity, duration: 0.5 }}
+                      className="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-12 bg-blue-400 -mt-12"
+                    />
+                  )}
+                </div>
+
+                {/* Pour Controls */}
+                <div className="text-center">
+                  {!isPouring ? (
+                    <Button
+                      onMouseDown={startPouring}
+                      onMouseUp={stopPouring}
+                      onTouchStart={startPouring}
+                      onTouchEnd={stopPouring}
+                      size="lg"
+                      className="w-full"
+                    >
+                      Hold to Pour
+                    </Button>
+                  ) : (
+                    <Button
+                      onMouseUp={stopPouring}
+                      onTouchEnd={stopPouring}
+                      size="lg"
+                      variant="danger"
+                      className="w-full"
+                    >
+                      Release to Stop
+                    </Button>
+                  )}
+                  <p className="text-xs text-gray-500 mt-2">
+                    {isLastIngredient ? 'Last ingredient!' : `${recipe.ingredients.length - currentIngredientIndex - 1} more to go`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Ingredient List */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-bold text-gray-900 mb-2 text-sm">Recipe:</h4>
+                <div className="space-y-1">
+                  {recipe.ingredients.map((ing, i) => (
+                    <div
+                      key={i}
+                      className={`text-sm flex justify-between ${
+                        i < currentIngredientIndex
+                          ? 'text-green-600 line-through'
+                          : i === currentIngredientIndex
+                          ? 'text-blue-900 font-bold'
+                          : 'text-gray-600'
+                      }`}
+                    >
+                      <span>{ing.name}</span>
+                      <span>{ing.amount}{ing.unit}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        );
+      })()}
 
       {!selectedOrder && orders.some(o => o.status === 'pending') && (
         <Card className="p-6 text-center bg-yellow-50">
