@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DrinkRecipe, BartenderRushOrder } from '@/types';
 import { getRecipes } from '@/lib/storage';
@@ -19,9 +19,17 @@ export default function BartenderRushMode() {
   const [lives, setLives] = useState(3);
   const [totalOrdersCompleted, setTotalOrdersCompleted] = useState(0);
   const [gameTime, setGameTime] = useState(0);
+  const ordersRef = useRef<BartenderRushOrder[]>([]);
+
+  // Update ref when orders change
+  useEffect(() => {
+    ordersRef.current = orders;
+  }, [orders]);
 
   useEffect(() => {
-    setRecipes(getRecipes().filter(r => r.ingredients && r.ingredients.length > 0));
+    const loadedRecipes = getRecipes().filter(r => r.ingredients && r.ingredients.length > 0);
+    setRecipes(loadedRecipes);
+    console.log('Loaded recipes:', loadedRecipes.length);
   }, []);
 
   useEffect(() => {
@@ -61,27 +69,17 @@ export default function BartenderRushMode() {
     if (lives <= 0 && gameState === 'playing') {
       setGameState('complete');
     }
-  }, [lives]);
-
-  useEffect(() => {
-    if (gameState === 'playing' && orders.length < getMaxOrders()) {
-      // Add new orders periodically
-      const interval = setInterval(() => {
-        if (orders.filter(o => o.status === 'pending' || o.status === 'in-progress').length < getMaxOrders()) {
-          addNewOrder();
-        }
-      }, getOrderInterval());
-
-      return () => clearInterval(interval);
-    }
-  }, [gameState, orders, level]);
+  }, [lives, gameState]);
 
   const getMaxOrders = () => Math.min(3 + Math.floor(level / 2), 8);
   const getOrderInterval = () => Math.max(5000 - (level * 500), 2000);
   const getOrderTimeLimit = () => Math.max(30 - (level * 2), 15);
 
-  const addNewOrder = () => {
-    if (recipes.length === 0) return;
+  const addNewOrder = useCallback(() => {
+    if (recipes.length === 0) {
+      console.log('No recipes available');
+      return;
+    }
 
     const recipe = recipes[Math.floor(Math.random() * recipes.length)];
     const newOrder: BartenderRushOrder = {
@@ -93,10 +91,30 @@ export default function BartenderRushMode() {
       timeLimit: getOrderTimeLimit(),
     };
 
+    console.log('Adding new order:', newOrder.id);
     setOrders(prev => [...prev, newOrder]);
-  };
+  }, [recipes, level]);
+
+  // Periodic order generation
+  useEffect(() => {
+    if (gameState !== 'playing') return;
+
+    const interval = setInterval(() => {
+      const currentOrders = ordersRef.current;
+      const activeOrders = currentOrders.filter(o => o.status === 'pending' || o.status === 'in-progress');
+      const maxOrders = getMaxOrders();
+
+      if (activeOrders.length < maxOrders) {
+        console.log(`Adding order (${activeOrders.length}/${maxOrders})`);
+        addNewOrder();
+      }
+    }, getOrderInterval());
+
+    return () => clearInterval(interval);
+  }, [gameState, level, addNewOrder]);
 
   const startGame = () => {
+    console.log('Starting game with', recipes.length, 'recipes');
     setGameState('playing');
     setLevel(1);
     setScore(0);
@@ -106,9 +124,12 @@ export default function BartenderRushMode() {
     setTotalOrdersCompleted(0);
     setGameTime(0);
 
-    // Add initial orders
-    setTimeout(() => addNewOrder(), 500);
-    setTimeout(() => addNewOrder(), 1500);
+    // Add initial orders after a short delay to ensure state is updated
+    setTimeout(() => {
+      console.log('Adding initial orders');
+      addNewOrder();
+      setTimeout(() => addNewOrder(), 1000);
+    }, 100);
   };
 
   const selectOrder = (order: BartenderRushOrder) => {
