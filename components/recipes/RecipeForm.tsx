@@ -141,7 +141,7 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
           <Input
             type="text"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(value) => setFormData({ ...formData, name: value })}
             placeholder="e.g., Espresso Martini"
             required
           />
@@ -155,7 +155,7 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
             <Input
               type="text"
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, category: value })}
               placeholder="e.g., Vodka, Whiskey, Rum"
               required
             />
@@ -186,7 +186,7 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
             <Input
               type="text"
               value={formData.glassware}
-              onChange={(e) => setFormData({ ...formData, glassware: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, glassware: value })}
               placeholder="e.g., Coupe, Rocks Glass"
               required
             />
@@ -199,7 +199,7 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
             <Input
               type="text"
               value={formData.garnish || ''}
-              onChange={(e) => setFormData({ ...formData, garnish: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, garnish: value })}
               placeholder="e.g., Lemon twist"
             />
           </div>
@@ -262,9 +262,8 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
           <div className="col-span-2">
             <Input
               type="number"
-              step="0.25"
-              value={currentIngredient.amount || ''}
-              onChange={(e) => setCurrentIngredient({ ...currentIngredient, amount: parseFloat(e.target.value) })}
+              value={currentIngredient.amount ? currentIngredient.amount.toString() : ''}
+              onChange={(value) => setCurrentIngredient({ ...currentIngredient, amount: parseFloat(value) || 0 })}
               placeholder="2"
             />
           </div>
@@ -287,7 +286,7 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
             <Input
               type="text"
               value={currentIngredient.name}
-              onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}
+              onChange={(value) => setCurrentIngredient({ ...currentIngredient, name: value })}
               placeholder="Ingredient name"
             />
           </div>
@@ -330,9 +329,8 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
           <Input
             type="text"
             value={newInstruction}
-            onChange={(e) => setNewInstruction(e.target.value)}
+            onChange={(value) => setNewInstruction(value)}
             placeholder="Add next step..."
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addInstruction())}
           />
           <Button type="button" onClick={addInstruction}>
             <Plus className="w-4 h-4 mr-1" />
@@ -360,9 +358,8 @@ export default function RecipeForm({ recipe, onSubmit, onCancel }: RecipeFormPro
           <Input
             type="text"
             value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
+            onChange={(value) => setNewTag(value)}
             placeholder="Add tag (e.g., House Special, Summer Menu)"
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
           />
           <Button type="button" onClick={addTag}>
             <Plus className="w-4 h-4 mr-1" />

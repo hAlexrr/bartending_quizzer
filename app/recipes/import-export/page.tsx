@@ -199,11 +199,11 @@ export default function ImportExportPage() {
                       className="hidden"
                       id="import-json"
                     />
-                    <label htmlFor="import-json">
-                      <Button variant="secondary" as="span">
+                    <label htmlFor="import-json" className="cursor-pointer">
+                      <span className="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 transition-all duration-200">
                         <Upload className="w-4 h-4 mr-2" />
                         Import Data
-                      </Button>
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -235,11 +235,11 @@ export default function ImportExportPage() {
                       className="hidden"
                       id="import-csv"
                     />
-                    <label htmlFor="import-csv">
-                      <Button variant="secondary" as="span">
+                    <label htmlFor="import-csv" className="cursor-pointer">
+                      <span className="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 transition-all duration-200">
                         <Upload className="w-4 h-4 mr-2" />
                         Import CSV
-                      </Button>
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -266,7 +266,7 @@ export default function ImportExportPage() {
                     </label>
                     <Input
                       value={collectionName}
-                      onChange={(e) => setCollectionName(e.target.value)}
+                      onChange={(value) => setCollectionName(value)}
                       placeholder="e.g., Summer Cocktails 2024"
                     />
                   </div>
@@ -317,11 +317,11 @@ export default function ImportExportPage() {
                         className="hidden"
                         id="import-collection"
                       />
-                      <label htmlFor="import-collection">
-                        <Button variant="secondary" as="span">
+                      <label htmlFor="import-collection" className="cursor-pointer">
+                        <span className="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-lg bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 transition-all duration-200">
                           <Upload className="w-4 h-4 mr-2" />
                           Import Collection
-                        </Button>
+                        </span>
                       </label>
                     </div>
                   </div>

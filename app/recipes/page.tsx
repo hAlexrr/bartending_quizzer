@@ -141,8 +141,7 @@ export default function RecipesPage() {
               type="text"
               placeholder="Search recipes, ingredients, categories..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              icon={<Search className="w-4 h-4" />}
+              onChange={(value) => setSearchQuery(value)}
             />
           </div>
 
@@ -199,20 +198,21 @@ export default function RecipesPage() {
                   Category
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  <Badge
-                    className={`cursor-pointer ${selectedCategory === 'all' ? 'bg-primary-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => setSelectedCategory('all')}
-                  >
-                    All
-                  </Badge>
-                  {categories.map(cat => (
+                  <button onClick={() => setSelectedCategory('all')}>
                     <Badge
-                      key={cat}
-                      className={`cursor-pointer ${selectedCategory === cat ? 'bg-primary-500 text-white' : 'bg-gray-200'}`}
-                      onClick={() => setSelectedCategory(cat)}
+                      className={`cursor-pointer ${selectedCategory === 'all' ? 'bg-primary-500 text-white' : 'bg-gray-200'}`}
                     >
-                      {cat}
+                      All
                     </Badge>
+                  </button>
+                  {categories.map(cat => (
+                    <button key={cat} onClick={() => setSelectedCategory(cat)}>
+                      <Badge
+                        className={`cursor-pointer ${selectedCategory === cat ? 'bg-primary-500 text-white' : 'bg-gray-200'}`}
+                      >
+                        {cat}
+                      </Badge>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -223,9 +223,8 @@ export default function RecipesPage() {
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {allTags.map(tag => (
-                    <Badge
+                    <button
                       key={tag}
-                      className={`cursor-pointer ${selectedTags.includes(tag) ? 'bg-accent-500 text-white' : 'bg-gray-200'}`}
                       onClick={() => {
                         if (selectedTags.includes(tag)) {
                           setSelectedTags(selectedTags.filter(t => t !== tag));
@@ -234,8 +233,12 @@ export default function RecipesPage() {
                         }
                       }}
                     >
-                      {tag}
-                    </Badge>
+                      <Badge
+                        className={`cursor-pointer ${selectedTags.includes(tag) ? 'bg-accent-500 text-white' : 'bg-gray-200'}`}
+                      >
+                        {tag}
+                      </Badge>
+                    </button>
                   ))}
                 </div>
               </div>

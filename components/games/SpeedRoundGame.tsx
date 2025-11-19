@@ -289,11 +289,8 @@ export default function SpeedRoundGame() {
           <Input
             type="text"
             value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onChange={(value) => !answerFeedback && setUserAnswer(value)}
             placeholder="Type your answer..."
-            autoFocus
-            disabled={!!answerFeedback}
             className={
               answerFeedback === 'correct'
                 ? 'border-green-500 bg-green-50'
